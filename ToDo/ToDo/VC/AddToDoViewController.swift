@@ -7,23 +7,42 @@
 //
 
 import UIKit
+import CoreData
 
 class AddToDoViewController: UIViewController {
+    
+    //Mark: properties
+    var managedContext: NSManagedObjectContext!
     //MARK: Outlets
     @IBOutlet weak var textView: UITextView!
     @IBOutlet weak var segmentedControl: UISegmentedControl!
     @IBOutlet weak var doneButton: UIButton!
     @IBOutlet weak var bottomConstraint: NSLayoutConstraint!
     //MARK: Actions
-    @IBAction func Cancel(_ sender: UIButton) {
-        
-            dismiss(animated:true)
+    @IBAction func cancel(_ sender: UIButton) {
+        dismiss(animated: true)
         textView.resignFirstResponder()
     }
     
     @IBAction func done(_ sender: UIButton) {
+        guard let title = textView.text, !title.isEmpty else {
+            return
+        }
         
+            let todo = ToDo(context: managedContext)
+            todo.title = title
+            todo.priority = Int16(segmentedControl.selectedSegmentIndex)
+            todo.date = Date()
+        
+        
+        do {
+            try managedContext.save()
+            dismiss(animated: true)
+        } catch {
+            print("Error saving todo: \(error)")
+        }
     }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         NotificationCenter.default.addObserver(
@@ -61,6 +80,8 @@ class AddToDoViewController: UIViewController {
         // Pass the selected object to the new view controller.
     }
     */
+        
+       
 
 }
 }
